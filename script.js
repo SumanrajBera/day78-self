@@ -7,6 +7,13 @@ canvas.height = window.innerHeight;
 const grav = 0.005
 const friction = 0.99
 
+let startAnimate = false
+
+ctx.font = "50px Monospace";
+ctx.fillStyle = "white"
+ctx.textAlign = "center"
+ctx.fillText("Click to create firework", canvas.width/2, canvas.height/2)
+
 class Particle {
     constructor(x, y, rad, velocity, color) {
         this.x = x;
@@ -21,7 +28,7 @@ class Particle {
         ctx.save()
         ctx.globalAlpha = this.alpha
         ctx.beginPath()
-        ctx.arc(this.x, this.y, this.rad,0,Math.PI*2, false)
+        ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2, false)
         ctx.fillStyle = this.color
         ctx.fill()
         ctx.closePath()
@@ -44,16 +51,17 @@ function animate() {
     requestAnimationFrame(animate)
 
     ctx.fillStyle = "rgba(14, 14, 14, 0.08)"
-    ctx.fillRect(0,0,canvas.width, canvas.height)
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    for(let i = 0; i < particles.length; i++) {
-        if(particles[i].alpha > 0) particles[i].update()
-        else particles.splice(i,1)
+    for (let i = 0; i < particles.length; i++) {
+        if (particles[i].alpha > 0) particles[i].update()
+        else particles.splice(i, 1)
     }
 }
 
-animate()
-
+function generateColor() {
+    return `hsl(${Math.random() * 360}, 50%, 50%)`
+}
 
 
 canvas.addEventListener("click", (e) => {
@@ -63,15 +71,18 @@ canvas.addEventListener("click", (e) => {
     let particleLen = 400;
 
     let angleLen = (Math.PI * 2) / particleLen
-
-    for(let i = 0; i < particleLen; i++) {
+    let color = generateColor()
+    for (let i = 0; i < particleLen; i++) {
         particles.push(new Particle(e.clientX, e.clientY, 5, {
-            x: Math.cos(angleLen * i) * Math.random() * 8 , 
-            y: Math.sin(angleLen * i)  * Math.random() * 8
-        }, `hsl(${Math.random()*360}, 50%, 50%)`))
+            x: Math.cos(angleLen * i) * Math.random() * 8,
+            y: Math.sin(angleLen * i) * Math.random() * 8
+        }, color))
     }
 
-    console.log(particles)
+    if(!startAnimate) {
+        animate()
+        startAnimate = true
+    }
 })
 
 window.onresize = () => {
